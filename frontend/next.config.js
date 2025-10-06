@@ -7,6 +7,13 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
   },
+  webpack: (config, { isServer }) => {
+    // Exclude canvas from server-side bundle
+    if (isServer) {
+      config.externals = [...(config.externals || []), { canvas: 'canvas' }];
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig

@@ -12,6 +12,9 @@ import { Stage, Layer, Image as KonvaImage, Rect, Text } from 'react-konva';
 import { ChevronLeft, ChevronRight, Save, Trash2 } from 'lucide-react';
 import useImage from 'use-image';
 
+// Force dynamic rendering for this page (Konva requires client-side only)
+export const dynamic = 'force-dynamic';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface BBox {
