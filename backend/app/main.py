@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.db.session import engine
 from app.models import models
-from app.api import datasets, models_api, training, auth, predictions
+from app.api import datasets, models_api, training, auth, predictions, checkin
 import os
 
 # Create database tables
@@ -58,3 +58,4 @@ app.include_router(datasets.router, prefix=f"{settings.API_V1_STR}/datasets", ta
 app.include_router(models_api.router, prefix=f"{settings.API_V1_STR}/models", tags=["models"])
 app.include_router(training.router, prefix=f"{settings.API_V1_STR}/training", tags=["training"])
 app.include_router(predictions.router, prefix=f"{settings.API_V1_STR}/predictions", tags=["predictions"])
+app.include_router(checkin.router, prefix=f"{settings.API_V1_STR}/checkin", tags=["checkin"])

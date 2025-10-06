@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Home, Database, Tag, Zap, Box, TestTube, LogOut } from 'lucide-react';
+import { Home, Database, Tag, Zap, Box, TestTube, LogOut, Camera } from 'lucide-react';
 import clsx from 'clsx';
 
 export function Navigation() {
@@ -19,6 +19,7 @@ export function Navigation() {
     { href: '/training', label: 'Training', icon: Zap },
     { href: '/models', label: 'Models', icon: Box },
     { href: '/testing', label: 'Testing', icon: TestTube },
+    { href: '/checkin', label: 'Check-In', icon: Camera },
   ];
 
   return (
@@ -27,12 +28,12 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href="/dashboard" className="text-xl font-bold">
-              YOLO Trainer
+              YOLO Check-In
             </Link>
             <div className="flex space-x-4">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = pathname.startsWith(item.href);
                 return (
                   <Link
                     key={item.href}

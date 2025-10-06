@@ -7,7 +7,10 @@ import type {
   Model, 
   TrainingJob,
   PredictionResult,
-  DatasetStatistics 
+  DatasetStatistics,
+  Person,
+  AttendanceRecord,
+  FaceDetectionResult
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
@@ -230,6 +233,102 @@ export const predictionsApi = {
     const response = await apiClient.post('/predictions/predict', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+    return response.data;
+  },
+};
+
+// Check-in API
+export const checkinApi = {
+  // Persons management
+  listPersons: async (activeOnly: boolean = true): Promise<Person[]> => {
+    const response = await apiClient.get('/checkin/persons/', {
+      params: { active_only: activeOnly }
+    });
+    return response.data;
+  },
+
+  getPerson: async (id: number): Promise<Person> => {
+    const response = await apiClient.get(`/checkin/persons/${id}`);
+    return response.data;
+  },
+
+  createPerson: async (name: string, file: File, employeeId?: string, department?: string): Promise<Person> => {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('file', file);
+    if (employeeId) formData.append('employee_id', employeeId);
+    if (department) formData.append('department', department);
+    
+    const response = await apiClient.post('/checkin/persons/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  updatePerson: async (id: number, data: Partial<Person>): Promise<Person> => {
+    const response = await apiClient.put(`/checkin/persons/${id}`, data);
+    return response.data;
+  },
+
+  deletePerson: async (id: number): Promise<{ message: string }> => {
+    const response = await apiClient.delete(`/checkin/persons/${id}`);
+    return response.data;
+  },
+
+  // Face detection
+  detectFaces: async (file: File): Promise<FaceDetectionResult> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await apiClient.post('/checkin/detect-faces', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  // Check-in
+  checkIn: async (file: File, location?: string): Promise<AttendanceRecord> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (location) formData.append('location', location);
+    
+    const response = await apiClient.post('/checkin/check-in', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  // Attendance records
+  listAttendance: async (startDate?: string, endDate?: string, personId?: number): Promise<AttendanceRecord[]> => {
+    const response = await apiClient.get('/checkin/attendance/', {
+      params: {
+        start_date: startDate,
+        end_date: endDate,
+        person_id: personId
+      }
+    });
+    return response.data;
+  },
+
+  exportAttendance: async (startDate?: string, endDate?: string): Promise<Blob> => {
+    const response = await apiClient.get('/checkin/attendance/export', {
+      params: {
+        start_date: startDate,
+        end_date: endDate
+      },
+      responseType: 'blob'
+    });
+    return response.data;
+  },
+
+  todayAttendance: async (): Promise<{
+    date: string;
+    total_persons: number;
+    checked_in: number;
+    attendance_rate: string;
+    records: number;
+  }> => {
+    const response = await apiClient.get('/checkin/attendance/today');
     return response.data;
   },
 };
