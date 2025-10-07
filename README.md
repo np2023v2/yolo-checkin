@@ -1,6 +1,36 @@
 # YOLO Check-In Platform
 
+[![Build Mono Image](https://github.com/np2023v2/yolo-checkin/actions/workflows/build-mono-image.yml/badge.svg)](https://github.com/np2023v2/yolo-checkin/actions/workflows/build-mono-image.yml)
+[![Docker Image](https://ghcr-badge.deta.dev/np2023v2/yolo-checkin/latest_tag?trim=major&label=latest)](https://github.com/np2023v2/yolo-checkin/pkgs/container/yolo-checkin)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A comprehensive web-based platform for creating, labeling, training, and deploying YOLO object detection models, with an integrated face recognition check-in system. Built with FastAPI (Python), PostgreSQL, and Next.js.
+
+## 🚀 Quick Start
+
+**Production (Mono Docker - All-in-One):**
+```bash
+git clone https://github.com/np2023v2/yolo-checkin.git && cd yolo-checkin
+docker pull ghcr.io/np2023v2/yolo-checkin:latest
+docker-compose -f docker-compose.mono.yml up -d
+# Access at http://localhost
+```
+
+**Development (Docker Compose):**
+```bash
+git clone https://github.com/np2023v2/yolo-checkin.git && cd yolo-checkin
+cp backend/.env.example backend/.env
+docker-compose up -d
+# Frontend: http://localhost:3000, Backend: http://localhost:8000
+```
+
+**Build and Test Mono Image Locally:**
+```bash
+./build-mono.sh
+# Access test instance at http://localhost:8080
+```
+
+📖 **[Mono Docker Guide](docker/mono/README.md)** | **[Implementation Details](MONO_DOCKER_IMPLEMENTATION.md)** | **[Architecture Diagrams](ARCHITECTURE_MONO.md)** | **[ARM64 Deployment](examples/deployment/arm64-deployment.md)** | **[Production SSL](examples/deployment/production-ssl.md)**
 
 ## Features
 
@@ -106,12 +136,44 @@ yolo-checkin/
 - Docker and Docker Compose (recommended)
 - OR Python 3.11+, Node.js 18+, PostgreSQL 15+, Redis
 
-### Quick Start with Docker
+### Quick Start with Docker (Mono Image - Recommended for Production)
+
+**One container with everything (Frontend + Backend + PostgreSQL):**
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/npsg02/yolo-trainer.git
-cd yolo-trainer
+git clone https://github.com/np2023v2/yolo-checkin.git
+cd yolo-checkin
+```
+
+2. Pull or build the mono image:
+```bash
+# Pull from GitHub Container Registry
+docker pull ghcr.io/np2023v2/yolo-checkin:latest
+
+# OR build locally
+docker build -t yolo-checkin:latest -f Dockerfile.mono .
+```
+
+3. Start the container:
+```bash
+docker-compose -f docker-compose.mono.yml up -d
+```
+
+4. Access the application:
+- Application: http://localhost
+- API Documentation: http://localhost/docs
+
+📖 **Detailed mono deployment guide**: See [docker/mono/README.md](docker/mono/README.md)
+
+### Development with Docker Compose
+
+**Separate containers for development (with hot reload):**
+
+1. Clone the repository:
+```bash
+git clone https://github.com/np2023v2/yolo-checkin.git
+cd yolo-checkin
 ```
 
 2. Create environment file:
@@ -419,6 +481,32 @@ The system will:
 
 ### Environment Variables
 
+#### Mono Docker Deployment (Single .env file)
+
+All configuration through environment variables passed to the container:
+
+```env
+# Database
+POSTGRES_USER=yolouser
+POSTGRES_PASSWORD=yolopass
+POSTGRES_DB=yolodb
+
+# Security
+SECRET_KEY=your-secret-key-change-in-production-use-openssl-rand-hex-32
+
+# API Configuration
+API_V1_STR=/api/v1
+
+# File Storage
+UPLOAD_DIR=/app/uploads
+MODEL_DIR=/app/models
+DATASET_DIR=/app/datasets
+```
+
+See `docker/mono/.env.mono.example` for full configuration.
+
+#### Development Setup
+
 Backend (`.env`):
 ```env
 DATABASE_URL=postgresql://yolouser:yolopass@localhost:5432/yolodb
@@ -467,7 +555,47 @@ npm run format
 
 ## Deployment
 
-### Production Deployment
+### Production Deployment with Mono Docker Image
+
+**Easiest and recommended approach:**
+
+1. Pull the latest image:
+```bash
+docker pull ghcr.io/np2023v2/yolo-checkin:latest
+```
+
+2. Create environment configuration:
+```bash
+cp docker/mono/.env.mono.example .env.mono
+# Edit .env.mono with production values:
+# - Generate SECRET_KEY: openssl rand -hex 32
+# - Set strong POSTGRES_PASSWORD
+# - Configure other settings as needed
+```
+
+3. Deploy with docker-compose:
+```bash
+docker-compose -f docker-compose.mono.yml up -d
+```
+
+4. Configure SSL/TLS (recommended):
+   - Use a reverse proxy (Nginx/Traefik/Caddy) in front of the container
+   - Set up Let's Encrypt for SSL certificates
+
+📖 **Full deployment guide**: [docker/mono/README.md](docker/mono/README.md)
+
+### Multi-Architecture Support
+
+The mono Docker image supports:
+- **AMD64** (x86_64) - Intel/AMD processors
+- **ARM64** (aarch64) - ARM processors (Raspberry Pi 4+, Apple Silicon, AWS Graviton)
+
+Pull the appropriate architecture automatically:
+```bash
+docker pull ghcr.io/np2023v2/yolo-checkin:latest
+```
+
+### Traditional Deployment
 
 1. Update environment variables for production
 2. Use production-ready database and Redis instances
