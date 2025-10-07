@@ -106,6 +106,24 @@ openssl rand -hex 32
 
 ## Building the Image
 
+### Quick Build and Test Script
+
+Use the provided script for easy building and testing:
+
+```bash
+# Build and test
+./build-mono.sh
+
+# Build only
+./build-mono.sh --build-only
+
+# Build for specific platform
+./build-mono.sh --platform linux/arm64
+
+# Test existing image
+./build-mono.sh --test-only
+```
+
 ### Local Build
 
 ```bash

@@ -2,6 +2,30 @@
 
 A comprehensive web-based platform for creating, labeling, training, and deploying YOLO object detection models, with an integrated face recognition check-in system. Built with FastAPI (Python), PostgreSQL, and Next.js.
 
+## 🚀 Quick Start
+
+**Production (Mono Docker - All-in-One):**
+```bash
+git clone https://github.com/np2023v2/yolo-checkin.git && cd yolo-checkin
+docker pull ghcr.io/np2023v2/yolo-checkin:latest
+docker-compose -f docker-compose.mono.yml up -d
+# Access at http://localhost
+```
+
+**Development (Docker Compose):**
+```bash
+git clone https://github.com/np2023v2/yolo-checkin.git && cd yolo-checkin
+cp backend/.env.example backend/.env
+docker-compose up -d
+# Frontend: http://localhost:3000, Backend: http://localhost:8000
+```
+
+**Build and Test Mono Image Locally:**
+```bash
+./build-mono.sh
+# Access test instance at http://localhost:8080
+```
+
 ## Features
 
 ### YOLO Training Platform
