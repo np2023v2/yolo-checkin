@@ -133,3 +133,35 @@ class TrainingJob(Base):
     user = relationship("User", back_populates="training_jobs")
     dataset = relationship("Dataset", back_populates="training_jobs")
     model = relationship("Model", back_populates="training_jobs")
+
+
+class Person(Base):
+    __tablename__ = "persons"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    employee_id = Column(String, unique=True, index=True)
+    department = Column(String)
+    face_encoding = Column(JSON)  # Store face encoding as JSON array
+    photo_path = Column(String)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    attendance_records = relationship("AttendanceRecord", back_populates="person")
+
+
+class AttendanceRecord(Base):
+    __tablename__ = "attendance_records"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    person_id = Column(Integer, ForeignKey("persons.id"))
+    check_in_time = Column(DateTime(timezone=True), server_default=func.now())
+    check_out_time = Column(DateTime(timezone=True))
+    photo_path = Column(String)  # Photo taken during check-in
+    confidence = Column(Float)  # Face recognition confidence
+    location = Column(String)
+    notes = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    person = relationship("Person", back_populates="attendance_records")

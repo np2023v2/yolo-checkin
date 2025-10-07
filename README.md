@@ -1,9 +1,10 @@
-# YOLO Trainer Platform
+# YOLO Check-In Platform
 
-A comprehensive web-based platform for creating, labeling, training, and deploying YOLO object detection models. Built with FastAPI (Python), PostgreSQL, and Next.js.
+A comprehensive web-based platform for creating, labeling, training, and deploying YOLO object detection models, with an integrated face recognition check-in system. Built with FastAPI (Python), PostgreSQL, and Next.js.
 
 ## Features
 
+### YOLO Training Platform
 - 🎯 **Dataset Management**: Create and manage custom YOLO datasets
 - 🏷️ **Web-Based Labeling**: Label images directly in the browser with an intuitive interface
 - 🚀 **One-Click Training**: Train YOLO models with customizable parameters
@@ -12,6 +13,15 @@ A comprehensive web-based platform for creating, labeling, training, and deployi
 - 💾 **Model Download**: Download trained models for local use
 - 📤 **Custom Model Upload**: Load and use your own pre-trained YOLO models
 
+### Face Recognition Check-In System ⭐ NEW
+- 📷 **Real-time Face Detection**: Detect faces from webcam in real-time
+- 👤 **Face Recognition**: Automatically recognize registered persons
+- ✅ **Automatic Check-In**: Check in/out with face recognition
+- 📋 **Person Management**: Register and manage persons with their face photos
+- 📊 **Attendance Tracking**: Track daily attendance with timestamps
+- 📈 **Attendance Statistics**: View attendance rates and reports
+- 📥 **Data Export**: Export attendance records to CSV
+
 ## Architecture
 
 ### Backend (FastAPI)
@@ -19,6 +29,7 @@ A comprehensive web-based platform for creating, labeling, training, and deployi
 - PostgreSQL database for data persistence
 - Redis for caching and task queuing
 - Ultralytics YOLO for training and inference
+- Face Recognition library for face detection
 - SQLAlchemy ORM for database operations
 - JWT authentication
 
@@ -35,11 +46,13 @@ A comprehensive web-based platform for creating, labeling, training, and deployi
 - Annotations and labels
 - Models and training jobs
 - Training metrics and logs
+- Persons (face encodings)
+- Attendance records
 
 ## Project Structure
 
 ```
-yolo-trainer/
+yolo-checkin/
 ├── backend/
 │   ├── app/
 │   │   ├── api/              # API endpoints
@@ -47,7 +60,8 @@ yolo-trainer/
 │   │   │   ├── datasets.py   # Dataset management
 │   │   │   ├── models_api.py # Model management
 │   │   │   ├── training.py   # Training jobs
-│   │   │   └── predictions.py # Inference
+│   │   │   ├── predictions.py # Inference
+│   │   │   └── checkin.py    # Face recognition check-in
 │   │   ├── core/             # Core functionality
 │   │   │   ├── config.py     # Configuration
 │   │   │   └── security.py   # Security utilities
@@ -216,6 +230,8 @@ npm run dev
 
 ### 7. Using the API
 
+#### Object Detection API
+
 ```python
 import requests
 
@@ -232,6 +248,58 @@ predictions = response.json()
 print(predictions)
 ```
 
+#### Face Recognition Check-In API
+
+```python
+import requests
+
+# Register a new person
+with open('face_photo.jpg', 'rb') as f:
+    response = requests.post(
+        'http://localhost:8000/api/v1/checkin/persons/',
+        data={
+            'name': 'John Doe',
+            'employee_id': 'EMP001',
+            'department': 'Engineering'
+        },
+        files={'file': f},
+        headers={'Authorization': 'Bearer YOUR_TOKEN'}
+    )
+person = response.json()
+print(f"Person registered: {person['name']}")
+
+# Check in with face photo
+with open('checkin_photo.jpg', 'rb') as f:
+    response = requests.post(
+        'http://localhost:8000/api/v1/checkin/check-in',
+        files={'file': f},
+        data={'location': 'Main Office'},
+        headers={'Authorization': 'Bearer YOUR_TOKEN'}
+    )
+record = response.json()
+print(f"Checked in: {record['person']['name']} at {record['check_in_time']}")
+
+# Get today's attendance
+response = requests.get(
+    'http://localhost:8000/api/v1/checkin/attendance/today',
+    headers={'Authorization': 'Bearer YOUR_TOKEN'}
+)
+stats = response.json()
+print(f"Attendance rate: {stats['attendance_rate']}")
+
+# Export attendance to CSV
+response = requests.get(
+    'http://localhost:8000/api/v1/checkin/attendance/export',
+    params={
+        'start_date': '2024-01-01',
+        'end_date': '2024-12-31'
+    },
+    headers={'Authorization': 'Bearer YOUR_TOKEN'}
+)
+with open('attendance.csv', 'wb') as f:
+    f.write(response.content)
+```
+
 ### 8. Downloading Models
 
 1. Go to the "Models" page
@@ -246,6 +314,53 @@ print(predictions)
 3. Click "Upload Custom Model"
 4. Select your .pt or .pth file
 5. Deploy and use your custom model
+
+### 10. Face Recognition Check-In System ⭐ NEW
+
+#### Registering Persons
+
+1. Go to the "Check-In" page from the navigation menu
+2. Click "Manage Persons" button
+3. Click "Register New Person"
+4. Fill in person details:
+   - Name (required)
+   - Employee ID (optional)
+   - Department (optional)
+5. Upload a clear frontal face photo
+6. Click "Register"
+
+The system will:
+- Detect the face in the photo
+- Extract face encoding
+- Store it for recognition
+
+#### Using Face Check-In
+
+1. Go to the "Check-In" page
+2. Click "Start Camera" to enable webcam
+3. Position yourself in front of the camera
+4. Click "Detect Faces" to see if you're recognized
+5. Click "Check In" to record attendance
+
+The system will:
+- Detect faces in the webcam frame
+- Match against registered persons
+- Record check-in time with confidence score
+- Display attendance statistics
+
+#### Viewing Attendance Records
+
+1. Click "Manage Persons" → Navigate to attendance section
+2. Use date filters to view specific periods
+3. See check-in/check-out times and durations
+4. Click "Export CSV" to download attendance data
+
+#### Managing Persons
+
+- Edit person information (name, employee ID, department)
+- Deactivate/activate persons
+- Delete persons (removes face encoding and records)
+- View registered persons list
 
 ## API Endpoints
 
@@ -287,6 +402,18 @@ print(predictions)
 ### Predictions
 - `POST /api/v1/predictions/infer` - Run inference
 - `POST /api/v1/predictions/test/{model_id}` - Test model
+
+### Check-In (Face Recognition) ⭐ NEW
+- `GET /api/v1/checkin/persons/` - List registered persons
+- `POST /api/v1/checkin/persons/` - Register new person with face photo
+- `GET /api/v1/checkin/persons/{id}` - Get person details
+- `PUT /api/v1/checkin/persons/{id}` - Update person information
+- `DELETE /api/v1/checkin/persons/{id}` - Delete person
+- `POST /api/v1/checkin/detect-faces` - Detect and recognize faces in image
+- `POST /api/v1/checkin/check-in` - Check in with face recognition
+- `GET /api/v1/checkin/attendance/` - List attendance records
+- `GET /api/v1/checkin/attendance/export` - Export attendance as CSV
+- `GET /api/v1/checkin/attendance/today` - Get today's attendance summary
 
 ## Configuration
 

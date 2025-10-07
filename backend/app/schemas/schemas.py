@@ -226,3 +226,73 @@ class DashboardStats(BaseModel):
     total_models: int
     total_training_jobs: int
     active_training_jobs: int
+
+
+# Person Schemas (for face recognition)
+class PersonBase(BaseModel):
+    name: str
+    employee_id: Optional[str] = None
+    department: Optional[str] = None
+    is_active: bool = True
+
+
+class PersonCreate(PersonBase):
+    pass
+
+
+class PersonUpdate(BaseModel):
+    name: Optional[str] = None
+    employee_id: Optional[str] = None
+    department: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class Person(PersonBase):
+    id: int
+    photo_path: Optional[str] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+
+# Attendance Record Schemas
+class AttendanceRecordBase(BaseModel):
+    person_id: int
+    location: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class AttendanceRecordCreate(AttendanceRecordBase):
+    pass
+
+
+class AttendanceRecord(AttendanceRecordBase):
+    id: int
+    check_in_time: datetime
+    check_out_time: Optional[datetime] = None
+    photo_path: Optional[str] = None
+    confidence: Optional[float] = None
+    created_at: datetime
+    person: Optional[Person] = None
+    
+    class Config:
+        from_attributes = True
+
+
+# Face Detection Schemas
+class FaceDetection(BaseModel):
+    x: int
+    y: int
+    width: int
+    height: int
+    confidence: float
+    person_id: Optional[int] = None
+    person_name: Optional[str] = None
+    match_confidence: Optional[float] = None
+
+
+class FaceDetectionResult(BaseModel):
+    faces: List[FaceDetection]
+    processing_time: float

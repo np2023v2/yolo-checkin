@@ -107,3 +107,43 @@ export interface DatasetStatistics {
   unlabeled_images: number;
   class_distribution: Record<string, number>;
 }
+
+export interface Person {
+  id: number;
+  name: string;
+  employee_id?: string;
+  department?: string;
+  photo_path?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface AttendanceRecord {
+  id: number;
+  person_id: number;
+  check_in_time: string;
+  check_out_time?: string;
+  photo_path?: string;
+  confidence?: number;
+  location?: string;
+  notes?: string;
+  created_at: string;
+  person?: Person;
+}
+
+export interface FaceDetection {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  confidence: number;
+  person_id?: number;
+  person_name?: string;
+  match_confidence?: number;
+}
+
+export interface FaceDetectionResult {
+  faces: FaceDetection[];
+  processing_time: number;
+}
