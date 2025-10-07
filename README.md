@@ -1,5 +1,9 @@
 # YOLO Check-In Platform
 
+[![Build Mono Image](https://github.com/np2023v2/yolo-checkin/actions/workflows/build-mono-image.yml/badge.svg)](https://github.com/np2023v2/yolo-checkin/actions/workflows/build-mono-image.yml)
+[![Docker Image](https://ghcr-badge.deta.dev/np2023v2/yolo-checkin/latest_tag?trim=major&label=latest)](https://github.com/np2023v2/yolo-checkin/pkgs/container/yolo-checkin)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A comprehensive web-based platform for creating, labeling, training, and deploying YOLO object detection models, with an integrated face recognition check-in system. Built with FastAPI (Python), PostgreSQL, and Next.js.
 
 ## 🚀 Quick Start
@@ -25,6 +29,8 @@ docker-compose up -d
 ./build-mono.sh
 # Access test instance at http://localhost:8080
 ```
+
+📖 **[Mono Docker Guide](docker/mono/README.md)** | **[Implementation Details](MONO_DOCKER_IMPLEMENTATION.md)** | **[ARM64 Deployment](examples/deployment/arm64-deployment.md)** | **[Production SSL](examples/deployment/production-ssl.md)**
 
 ## Features
 
