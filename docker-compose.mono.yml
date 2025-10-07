@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  yolo-checkin-mono:
+    image: yolo-checkin:latest
+    container_name: yolo-checkin-mono
+    ports:
+      - "80:80"
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=yolouser
+      - POSTGRES_PASSWORD=yolopass
+      - POSTGRES_DB=yolodb
+      - SECRET_KEY=your-secret-key-change-in-production-use-openssl-rand-hex-32
+      - API_V1_STR=/api/v1
+      - UPLOAD_DIR=/app/uploads
+      - MODEL_DIR=/app/models
+      - DATASET_DIR=/app/datasets
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - uploads_data:/app/uploads
+      - models_data:/app/models
+      - datasets_data:/app/datasets
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads_data:
+  models_data:
+  datasets_data:
