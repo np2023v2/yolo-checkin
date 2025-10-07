@@ -30,7 +30,7 @@ docker-compose up -d
 # Access test instance at http://localhost:8080
 ```
 
-📖 **[Mono Docker Guide](docker/mono/README.md)** | **[Implementation Details](MONO_DOCKER_IMPLEMENTATION.md)** | **[ARM64 Deployment](examples/deployment/arm64-deployment.md)** | **[Production SSL](examples/deployment/production-ssl.md)**
+📖 **[Mono Docker Guide](docker/mono/README.md)** | **[Implementation Details](MONO_DOCKER_IMPLEMENTATION.md)** | **[Architecture Diagrams](ARCHITECTURE_MONO.md)** | **[ARM64 Deployment](examples/deployment/arm64-deployment.md)** | **[Production SSL](examples/deployment/production-ssl.md)**
 
 ## Features
 
